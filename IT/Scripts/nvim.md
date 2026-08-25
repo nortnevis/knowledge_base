@@ -2,6 +2,11 @@
 ```
 
 ---
+# NVChad
+## Пути до бинарников Mason
+По умолчанию это `~/.local/share/nvim/mason/bin`.
+
+---
 # VS Code's `Ctrl+D` analogue in neovim
 In Vim, native **`Ctrl+d` scrolls down half a screen**. If you are looking for an analogue to **VS Code/Sublime Text's `Ctrl+d`** (which selects the current word and creates multiple cursors to edit next occurrences), Vim achieves this using the **`cgn` operator** combined with the **dot (`.`) command**.
 The Native Vim Workflow (`cgn` + `.`)
