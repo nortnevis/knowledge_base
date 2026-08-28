@@ -1,3 +1,5 @@
+```table-of-contents
+```
 # Boosting pacman speed (ArchLinux)
 Сначала делаем бэкап `/etc/pacman.d/mirrorlist`. Затем используя пакет `reflector` запустить команду для изменения списка зеркал с сохранением в файл:
 ```bash
@@ -41,69 +43,69 @@ Or simply restart the system maybe?
 - Once added, click on Obsidian, select **Options**, and set it to use your **High Performance GPU** (NVIDIA or AMD).
 # NeoVim
 ## C++26 clangd support
-## План
-1. Собрать bin файлы в форке.
-2. Собрать `cmake --install build --prefix my_install`
-3. Скопировать `clangd` и `clang++` в `tools/bin/` проекта
-4. Скопировать `my_install/lib/clang/21/include/` в `tools/lib/clang/21/include/` проекта
-5. Скопировать `libcxx/include` в `tools/lib/libcxx/include` проекта
-6. Скопировать `__config_site` и `__assertion_handler` в `tools/libcxx/include проекта`
-7. Добавить флаги в `.clangd`
-8. Добавить параметры в `.nvim.lua` 
-Нужно собрать проект: https://github.com/bloomberg/clang-p2996.git на ветке `p2996`. Запустить команду `cmake --install build --prefix <install_path>`.
-Скопировать библиотеки и бинарники.
-## Копирование библиотек
+### Сборка
+Скачать [форк](https://github.com/nortnevis/clang-p2996).
 ```bash
-cp clang-p2996/libcxx/vendor/llvm/default_assertion_handler.in \
-   <my_project>/tools/libcxx/include/__assertion_handler
+cmake -B build -G "Ninja" \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DCMAKE_INSTALL_PREFIX="install" \
+	-DLLVM_TARGETS_TO_BUILD="X86" \
+	-DCLANGD_BUILD_XPC=OFF \
+	-DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" \
+	-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind" \
+	-DLIBCXX_HARDENING_MODE=extensive \
+	-DLLVM_ENABLE_ASSERTIONS=OFF \
+	-DLLVM_INCLUDE_TESTS=OFF \
+	-DLLVM_INCLUDE_BENCHMARKS=OFF \
+	llvm
+	
+cmake --build build -j16
 ```
-Для `__config_site` команды копирования нет, потому что **готового файла не существует нигде** — его генерирует CMake при конфигурации libc++.
-Два пути: сгенерировать, создать с нуля.
-### Генерация:
+### Установка
 ```bash
-mkdir build && cd build
-cmake -G Ninja -DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" ../runtimes
+cmake --install build
 ```
-Итоговый путь: `build/include/c++/v1/__config_site` (or under a target-specific subdirectory like `build/include/x86_64-unknown-linux-gnu/c++/v1/__config_site`.
-### Создание с нуля
-Можно создать с нуля, вычислив значения из:
-- шаблона `libcxx/include/__config_site.in` (что там `#cmakedefine`, `#cmakedefine01`),
-- дефолтов `libcxx/CMakeLists.txt` (блок `config_define(...)` + опции: ABI=1, threads/monotonic/terminal/filesystem/random/localization/unicode/wide-chars/timezone=ON, PSTL=`std_thread`, hardening=`none`).
-## Override clangd in `.nvim.lua`
-Я скопировал `clangd` из папки `clang-p2996/build/bin/clangd` в папку `tools/` целевого проекта. 
-```lua
--- .nvim.lua
-local project_root = vim.fn.expand("<sfile>:p:h")
-if project_root == "" then
-	project_root = vim.fn.getcwd()
-end
-
-local clangd = project_root .. "/tools/bin/clangd"
-
-vim.lsp.config("clangd", {
-	cmd = {
-		clangd,
-		"--background-index --clang-tidy",
-	},
-	root_dir = vim.fs.root(0, { ".git", ".clangd", "compile_commands.json" }),
-})
-
-vim.lsp.enable("clangd")
-```
-Теперь надо настроить флаги компиляции и подключить собранные библиотеки. 
-## Конфигурация `.clangd`
-Начнём с `.clangd`:
+Нас интересуют следующие директории:
+- `install/bin/`, где содержатся clangd и прочие бинарники;
+- `install/include/c++/v1/`, где содержатся заголовки STL библиотеки (`libcxx`).
+- `install/lib/clang/21/include`, где находятся заголовки стандартной библиотеки C (`clangd` сам найдёт их относительно своей директории).
+- `install/include/x86_64-unknown-linux-gnu/c++/v1/__config_site`, который следует скопировать в `install/include/c++/v1`.
+В `.clangd` необходимо указать путь:
 ```yaml
 CompileFlags:
-  CompilationDatabase: build/
   Add:
     - -std=c++26
     - -freflection-latest
     - -nostdinc++
     - -isystem
-    - /path/to/project/root/tools/libcxx/include
+    - <path/to/libcxx/include>  # внутри неё должен быть `c++/v1`
 ```
+В `.clangd` работают символические ссылки относительно директории, которая содержит `compile_commands.json`. Можно создать символическую ссылку до `install/include` в этой директории.
+### Запуск в neovim
+```lua
+-- .nvim.lua
 
+local project_root = vim.fs.root(0, { ".git", ".clangd" })
+if project_root == "" then
+	project_root = vim.fn.expand("<sfile>:p:h")
+	if project_root == "" then
+		project_root = vim.fn.getcwd()
+	end
+end
+
+local clangd_path = project_root .. "/tools/bin/clangd"
+
+vim.lsp.config("clangd", {
+	cmd = {
+		clangd_path,
+		"--background-index",
+		"--clang-tidy",
+	},
+	root_dir = project_root,
+})
+
+vim.lsp.enable("clangd")
+```
 ## Autocompletion nvim-cmp в Windows terminal
 Нужно вставить эти конфиги в `actions` или в `keybindings`:
 ```json
@@ -127,3 +129,4 @@ CompileFlags:
 	"id": "User.sendInput.E116B028"
 }
 ```
+---
