@@ -55,3 +55,12 @@ catch(A a) {cout << "A" << endl;}
 
 Концепция выгружаемого и невыгружаемого пула
 
+---
+# Linux kernel library
+Книга: Linux device drivers, функция chip probe.
+Через acpi не получится строить device tree
+raspberry pi или orange pi. Можно подключать через hdmi интерфейс, можно собрать ядро (например: armbian) и записать на sd карту.
+Написать драйвер
+Ознакомиться с device tree
+Другие отделы в Группе компаний Astra
+Что такое gpio
