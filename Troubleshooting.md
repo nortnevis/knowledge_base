@@ -138,3 +138,17 @@ echo -1 | sudo tee /sys/bus/usb/devices/usb*/power/autosuspend
 ```
 Используйте код с осторожностью.
 _Если это помогло, зафиксируйте настройку навсегда._ Для этого добавьте параметр ядра `usbcore.autosuspend=-1` в конфигурацию вашего загрузчика (например, в `/etc/default/grub` в строку `GRUB_CMDLINE_LINUX_DEFAULT`, после чего обновите GRUB командой `sudo update-grub`).
+
+---
+# X11 Forwarding to Host GPU
+Option 4: X11 Forwarding (Linux Host to Linux Guest)
+If you just want to run a single Linux app inside the VM but have it render seamlessly on your host desktop:
+1. On your **host** terminal, allow connections (for testing):
+```bash
+xhost +local:
+```
+2. Connect to your VM via SSH using the `-X` or `-Y` flag:
+```bash
+ssh -X user@vm_ip_address
+```
+3. Run your graphical application from that terminal (e.g., `firefox` or `vlc`). The window will pop up on your host desktop, using your host's display server.
