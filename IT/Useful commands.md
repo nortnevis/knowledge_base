@@ -94,6 +94,7 @@ Get-ChildItem .\ProjectSourceFilesFolder -File -Recurse -Include "*.cpp","*.c","
 ```
 
 ---
+# Прочее
 Путь до инструментов разработчика:
 ```
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build
@@ -148,7 +149,7 @@ echo:
 .\file.exe
 ```
 
-
+# Debian apt utility
 Для отображения общей информации о пакете можно использовать команду:
 `apt-cache show <package_name>=<package_version>`
 
@@ -159,11 +160,12 @@ echo:
 `apt-cache rdepends --installed <package_name>`
 `--installed` ограничивает вывод теми пакетами, которые в данный момент установлены.
 
+# Пигментация консоли
 Для того, чтобы добавить цвета в `less` для xml можно использовать `pygmentize`. Примеры команд:
 ```bash
 cat file.xml | pygmentize -l xml -f terminal | less -R
 ```
-
+# WinDbg
 WinDbg Server Creation
 ```
 dbgsrv -t tcp:port=5005,password=1234 
