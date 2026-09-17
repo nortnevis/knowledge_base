@@ -310,6 +310,40 @@ void foo(T&& arg1, auto&& arg2);
 // auto&& is a universal reference
 ```
 Если передаётся lvalue, то оно будет представлено как lvalue тип. Иначе как rvalue.
+
+Наткнулся на ошибку, когда в корутине принимал универсальную ссылку:
+```cpp
+template <typename T>
+awaitable<void> bad_coro(T&& arg) { // life-time error: xvalue of type rvalue reference
+	std::print("{}", a);
+	co_return;
+}
+
+template <typename T>
+awaitable<void> coro(std::decay_t<T> arg) { // xvalue of type lvalue (not-reference)
+	std::print("{}", a);
+	co_return;
+}
+
+template <typename T>
+void foo(T&& a, io_context& ctx) {
+	co_spawn(ctx, [](std::forward<T>(a)), detached);
+}
+
+int main(){
+	io_context ctx;
+	{
+		int a = 7;
+		foo(std::move(a), ctx);
+	}
+	ctx.run();
+}
+```
+Здесь именованная переменная `a` разрушается, так и не передав своё владение. Мы тут только `rvalue` ссылки передали. А рассчитывать на продление жизни ссылки не приходится, так как это происходит только в таких случаях и только для rvalue выражений:
+```cpp
+Test&& r = Test{}; // живёт пока есть r
+f(Test{}); // живёт только до конца выражения (до ";")
+```
 ## decltype, declval
 `decltype()` резолвит конечный тип всего выражения.
 `declval<T>()` возвращает rvalue ссылку на объект класса, не вызывая конструктор. Таким образом можно извлекать тип членов класса без конструирования объекта посредством decltype(). Пример:
