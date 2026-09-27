@@ -138,6 +138,17 @@ echo -1 | sudo tee /sys/bus/usb/devices/usb*/power/autosuspend
 ```
 Используйте код с осторожностью.
 _Если это помогло, зафиксируйте настройку навсегда._ Для этого добавьте параметр ядра `usbcore.autosuspend=-1` в конфигурацию вашего загрузчика (например, в `/etc/default/grub` в строку `GRUB_CMDLINE_LINUX_DEFAULT`, после чего обновите GRUB командой `sudo update-grub`).
+# Полное отключение энергосбережения (Autosuspend)
+Ядро Linux по умолчанию пытается усыпить USB-устройства для экономии энергии. Bluetooth-чипы Intel и MediaTek часто падают в `0x0c` при попытке проснуться.
+Создайте конфигурационный файл для модуля `btusb`:
+```bash
+sudo nano /etc/modprobe.d/btusb.conf
+```
+Добавьте туда строку, полностью запрещающую авто-сон для Bluetooth:
+```
+options btusb enable_autosuspend=0
+```
+_(Для применения потребуется перезагрузка)._
 
 ---
 # X11 Forwarding to Host GPU
