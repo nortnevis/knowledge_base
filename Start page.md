@@ -6,3 +6,6 @@ obsidian использует utf-8 для кодировки содержимо
 [[Network Basics|Основы сетевой коммуникации]]
 [[VPN notes|Заметки по VPN]]
 [[Windows Driver Developing notes|Заметки по разработке драйвов Windows]]
+
+TODO:
+sysdev разбить на linux, windows и low-level (assembly, reverse enngineering, HPC, benchmarking, GPGPU, embedded)
