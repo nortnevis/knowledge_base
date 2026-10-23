@@ -72,6 +72,56 @@ msvcmon.exe /installed /nofirewallwarn /timeout 86400 /noauth /anyuser /nosecuri
 ssh -nN -L localhost:4026:remotehost:4026 user@ssh-host
 ```
 
+# TMUX
+Создать сессию:
+```bash
+tmux new -s <task_name>
+```
+Отсоединиться от сессии:
+```
+'Ctrl + b', затем 'd'
+```
+Посмотреть список сессий:
+```bash
+tmux ls
+```
+Подключиться к сессии:
+```bash
+tmux attach -t <task_name>
+```
+Включить скроллинг мышью:
+```bash
+tmux set -g mouse on
+```
+Перевести управление в режим vi:
+```bash
+set-window-option -g mode-keys vi
+```
+Далее войти в режим копирования (vi-режим):
+```
+'Сtrl + b', затем '['
+```
+## Shared TMUX
+1. **Создайте общую группу** (если её ещё нет) и добавьте туда обоих пользователей, чтобы они имели право читать и писать в один файл. Назовём группу `tmuxshare`:
+```bash
+sudo groupadd tmuxshare
+sudo usermod -aG tmuxshare user1
+sudo usermod -aG tmuxshare user2
+```
+2. **Пользователь 1** запускает сессию, указывая путь к общему сокету через флаг `-S`, и меняет права на этот сокет:    
+```bash
+# Создаем сессию в общем файле сокета
+tmux -S /tmp/shared_socket new-session -s shared
+```
+3. После этого внутри tmux (или в соседнем окне) нужно дать группе доступ к этому файлу:
+```bash
+sudo chgrp tmuxshare /tmp/shared_socket
+chmod 770 /tmp/shared_socket
+```
+4. **Пользователь 2** подключается со своего компьютера по SSH под своим именем (`user2`) и цепляется к этому же файлу сокета:
+```bash
+tmux -S /tmp/shared_socket attach-session -t shared
+```
 # System journal linux
 Посмотреть используемое пространство:
 ```bash
