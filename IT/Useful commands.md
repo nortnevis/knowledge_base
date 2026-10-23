@@ -95,7 +95,7 @@ tmux set -g mouse on
 ```
 Перевести управление в режим vi:
 ```bash
-set-window-option -g mode-keys vi
+tmux set-window-option -g mode-keys vi
 ```
 Далее войти в режим копирования (vi-режим):
 ```
