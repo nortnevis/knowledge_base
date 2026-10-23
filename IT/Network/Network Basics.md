@@ -35,6 +35,13 @@ Get-DnsClientNrptPolicy -Effective
 Remove-DnsClientNrptRule -Name "{<GUID>}"
 ```
 
+### Linux делегирование `systemd-resolved`
+Если вы хотите перенаправлять запросы конкретного домена через локальный клиентский стек Linux (с помощью `systemd-resolved`), вы можете использовать файлы конфигурации `systemd.dns-delegate` в каталоге `/etc/systemd/dns-delegate.d/*.dns-delegate`:
+```ini
+[DnsDelegate]
+Server=192.0.2.50
+Domain=sub.example.com
+```
 ### Linux systemd-resolve
 Создаём файл `etc/systemd/network.d/00-override.network`. Прописываем в нём:
 ```ini
