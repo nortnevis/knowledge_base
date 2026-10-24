@@ -1,8 +1,18 @@
+# Использование Docker в первый раз
+Нужно добавить пользователя в группу docker:
+```bash
+usermod -aG docker $USER
+```
+После чего стоит перезагрузить систему, чтобы изменения вступили в силу.
+В противном случае будет такая ошибка:
+```
+ERROR: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Head "http://%2Fvar%2Frun%2Fdocker.sock/_ping": dial unix /var/run/docker.sock: connect: permission denied
+```
 # Сборка
 ```bash
-docker build -t [HOST[:PORT_NUMBER]/]PATH[:TAG] <Dockerfile_path>
+docker build -t [HOST[:PORT_NUMBER]/]PATH[:TAG] <Dockerfile_folder_path>
 ```
-Собирается образ из `Dockerfile`, который ищется по пути `<Dockerfile_path>`.
+Собирается образ из `Dockerfile`, который ищется по пути `<Dockerfile_folder_path>`.
 # Запуск
 ```bash
 docker run -it --rm <image_name> sh
