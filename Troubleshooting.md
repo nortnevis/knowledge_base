@@ -35,6 +35,16 @@ Solution: Add this to `settings.json`:
 }
 ```
 Or simply restart the system maybe?
+# X11 Error
+Подключение по  SSH с командой `ssh -XYC <host>`, которое выдает следующую ошибку при запуске x11 приложение от `root`:
+```
+X11 connection rejected because of wrong authentication.
+Error: Can't open display: localhost:10.0
+```
+Решается следующим образом:
+```bash
+sudo env DISPLAY="$DISPLAY" XAUTHORITY="$HOME/.Xauthority" <command>
+```
 # Obsidian
 ## Low fps
 **Force GPU Usage via Windows Graphics Settings:**
