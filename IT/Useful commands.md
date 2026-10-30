@@ -23,12 +23,13 @@ Create a file (for example `.gitconfig-repos`) and write configs:
 	autocrlf = false
 	eol = lf
 ```
-Then you can include this config in **global configs** file (for example `.gitconfig-repos` instead of `<config_path>`):
+Then you can include this config in **global configs** file (for example `~/.gitconfig-repos` instead of `<absolute_config_path>`):
 ```ini
 [includeIf "gitdir/i:<dir_path>/"]
-        path = <config_path>
+        path = <absolute_config_path>
 ```
 You must add `/` after `<dir_path>`.
+So, we have a folder, that we can apply configs to. And path to the configuration file. It can be stored anywhere.
 # Git global config final example
 ```ini
 [user]
@@ -42,7 +43,7 @@ You must add `/` after `<dir_path>`.
         st = status
         hist = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --branches
 [includeIf "gitdir/i:<dir_path>/"]
-        path = <config_path>
+        path = <absolute_config_path>
 ```
 
 ---
