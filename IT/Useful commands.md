@@ -102,6 +102,18 @@ tmux set-window-option -g mode-keys vi
 ```
 'Сtrl + b', затем '['
 ```
+Чтобы сохранить настройки, необходимо записать  их в `~/.tmux.conf`:
+```ini
+# Enable Vi mode for switching panes, copying text, etc.
+set-window-option -g mode-keys vi
+
+# Enable mouse support (clicking, resizing, scrolling)
+set -g mouse on
+```
+Они будут автоматически применяться  к новым сессиям. Чтобы применить их к существующей сессии:
+```bash
+tmux source-file ~/.tmux.conf
+```
 ## Shared TMUX
 1. **Создайте общую группу** (если её ещё нет) и добавьте туда обоих пользователей, чтобы они имели право читать и писать в один файл. Назовём группу `tmuxshare`:
 ```bash
