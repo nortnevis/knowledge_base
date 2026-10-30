@@ -9,3 +9,5 @@ obsidian использует utf-8 для кодировки содержимо
 
 TODO:
 sysdev разбить на linux, windows и low-level (assembly, reverse enngineering, HPC, benchmarking, GPGPU, embedded)
+
+cq835193
