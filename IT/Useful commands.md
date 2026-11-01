@@ -12,7 +12,8 @@ curl -LSf -O "https://example.com"
 - `-s` (silent): отключает отображение процесса загрузки (индикатор прогресса).
 - `-S` (show-error): заставляет `curl` выводить ошибку, если запрос завершился неудачно.
 - `-f` (fail): завершает работу `curl` с кодом ошибки без вывода страницы, если сервер вернул ошибку 40x или 50x.
-# Git directory scope configs
+# Git
+## Git directory scope configs
 Create a file (for example `.gitconfig-repos`) and write configs:
 ```ini
 [user]
@@ -30,7 +31,7 @@ Then you can include this config in **global configs** file (for example `~/.git
 ```
 You must add `/` after `<dir_path>`.
 So, we have a folder, that we can apply configs to. And path to the configuration file. It can be stored anywhere.
-# Git global config final example
+### git global config final example
 ```ini
 [user]
         name = <Name>
@@ -45,6 +46,9 @@ So, we have a folder, that we can apply configs to. And path to the configuratio
 [includeIf "gitdir/i:<dir_path>/"]
         path = <absolute_config_path>
 ```
+## Local gitignore
+`.git/info/exclude` - локальный аналог .gitignore, который не индексируется и не отслеживается.
+Он позволяет игнорировать файлы только на своём компьютере
 
 ---
 lsof (List Open Files) — отображает информацию об открытых файлах, сетевых соединениях, сокетах и процессах, которые их используют.
