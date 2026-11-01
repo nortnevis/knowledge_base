@@ -45,6 +45,9 @@ Error: Can't open display: localhost:10.0
 ```bash
 sudo env DISPLAY="$DISPLAY" XAUTHORITY="$HOME/.Xauthority" <command>
 ```
+# Freezed terminal with broken SSH connection
+Enter next sequence of symbols: `<Enter>` + `~` + `.`
+
 # Obsidian
 ## Low fps
 **Force GPU Usage via Windows Graphics Settings:**
