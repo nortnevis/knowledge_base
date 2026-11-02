@@ -106,6 +106,15 @@ tmux set-window-option -g mode-keys vi
 ```
 'Сtrl + b', затем '['
 ```
+Убираем задержку перед обработкой Escape (по умолчанию 500мс):
+```bash
+tmux set -sg escape-time 10
+```
+Проверяем и удаляем конфликтующие привязки к `Ctrl-[` (это синоним Escape):
+```bash
+tmux unbind-key -n C-[
+```
+## Сохранение настроек TMUX
 Чтобы сохранить настройки, необходимо записать  их в `~/.tmux.conf`:
 ```ini
 # Enable Vi mode for switching panes, copying text, etc.
@@ -113,6 +122,12 @@ set-window-option -g mode-keys vi
 
 # Enable mouse support (clicking, resizing, scrolling)
 set -g mouse on
+
+# Remove waiting symbols after escape
+set -sg escape-time 10
+
+# Unbind Escape
+unbind-key -n C-[
 ```
 Они будут автоматически применяться  к новым сессиям. Чтобы применить их к существующей сессии:
 ```bash
