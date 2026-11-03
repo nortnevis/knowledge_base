@@ -112,7 +112,7 @@ private:
 `co_yield` - приостанавливает выполнение с возвращением значения.
 `co_return` - завершает выполнение с возвращением значения.
 ### 1.2. Составляющие корутины
-- `promise object` - через него передаём результат или исключение. Управляется внутри корутины. Не связан с `std::promise`.
+- `promise object` - через него передаём результат или исключение. В своем определении должен иметь объявление `promise_type` класса. Управляется внутри корутины. Не связан с `std::promise`.
 - `coroutine handle` - не владеющий дескриптор используемый при возобновлении и уничтожении корутины. Манипулируется `Awaiter` объектом снаружи корутины. (Не владеющий, значит не управляющий жизненным циклом, аки сырой указатель вместо умного).
 - `coroutine state` - внутреннее динамически аллоцированное хранилище состояния. Хранит в себе:
 	- `promise object`
@@ -134,6 +134,13 @@ private:
 │    └─ (Например: ваш сокет, таймер, буферы)              │
 └──────────────────────────────────────────────────────────┘
 ```
+### 1.5. `promise_type`
+Должны быть реализованы:
+-  `Task<T> get_return_object()`
+- `std::suspend_never  initial_suspend() noexcept`
+- `std::suspend_always final_suspend()   noexcept`
+- `void return_value(T value)` или `void return_void()`
+- `void unhandled_exception()`
 ### 1.3. `Awaitable` и `Awaiter`
 По моим наблюдениям операндом `co_await` всегда является `Awaitable` объект, который затем преобразуется в `Awaiter`. `Awaiter` объект определяет поведение оператора `co_await`.
 Для `Awaitable` должны быть реализовываны:
@@ -175,12 +182,66 @@ auto result = co_await some_awaitable;
 - constructors
 - destructors
 - main function
-### 1.5. Promise
-Описание
 ### 1.7. Пример
 ```cpp
+#include <coroutine>
+#include <exception>
+
+template<typename T> struct Task;   // forward-decl: нужен Promise<T>
+
+template<typename T>
+struct Promise {
+    T value;
+
+    Task<T> get_return_object();          // возвращаем тип корутины
+
+    std::suspend_never  initial_suspend() noexcept;
+    std::suspend_always final_suspend()   noexcept;
+
+    void return_value(T value);
+    // void return_void();                // альтернатива для void-корутин
+
+    void unhandled_exception();
+};
+
+template<typename T>
+struct Task {
+    using promise_type = Promise<T>;      // T — с большой буквы
+};
+
+template<typename T>
+struct AwaitableEntity {
+    T result;
+
+    struct Awaiter {
+        AwaitableEntity& entity;
+
+        bool await_ready();
+
+        void await_suspend(std::coroutine_handle<> handle) noexcept;
+
+        T    await_resume();              // возвращаем T, а не void
+    };
+
+    Awaiter operator co_await();
+};
+
+// Не корутина — просто «фабрика» awaitable-объекта.
+// Если хотите сделать её корутиной, ей нужен co_return / co_await
+// и собственный promise_type.
+AwaitableEntity<int> coro1() {
+    return {42};
+}
+
+// Корутина: явный тип возврата обязателен.
+Task<int> coro2() {
+    int res = co_await coro1();
+    co_return res;
+}
+
 int main(int argc, char* argv[]) {
-	return 0;
+    coro2();
+    return 0;
 }
 ```
 ## 2. Ranges
