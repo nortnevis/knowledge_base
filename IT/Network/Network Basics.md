@@ -114,6 +114,17 @@ net.ipv6.conf.lo.disable_ipv6 = 1
 Принять изменения: `sudo sysctl --system`
 
 ---
+# Network Capabilities
+Чтобы задать административные capablilities на бинарник:
+```bash
+sudo setcap cap_net_admin,cap_net_bind_service+ep <path_to_bin>
+```
+Для просмотра capabilities:
+```bash
+getcap <path_to_bin>
+```
+
+---
 # HTTPS
 HTTPS - это безопасная версия протокола передачи данных HTTP, которая применяет криптографические протоколы SSL и TLS.
 TLS (Transport Layer Security) - новый криптографический протокол, исправивший уязвимости SSL. На данный момент существуют версии tls1.2 и tls1.3, остальные устаревшие версии блокируются как ненадёжные.
