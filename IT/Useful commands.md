@@ -154,7 +154,15 @@ chmod 770 /tmp/shared_socket
 ```bash
 tmux -S /tmp/shared_socket attach-session -t shared
 ```
-# Привязка процессов к ядрам `taskset`
+
+---
+# GDB
+## Красивый принт
+Использовать команду `set print pretty on`. Это позволит выводит состав объектов в множестве строк.
+
+---
+# Performance
+## Привязка процессов к ядрам `taskset`
 Для того, чтобы привязать процесс (команду) к ядру, нужно выполнить команду с указанием номеров логических ядер (потоков) списком (начинается нумерация с 0):
 ```bash
 taskset -c 2,7 qemu-system-arm ...
@@ -167,7 +175,7 @@ taskset -c 0-3 qemu-system-arm ...
 ```bash
 lscpu -e=CPU,CORE
 ```
-# Изменение частоты процессора
+## Изменение частоты процессора
 По умолчанию в Linux часто используется режим `powersave` или `ondemand`. Чтобы принудительно заставить процессор работать на максимальной базовой и буст-частоте (до перезагрузки), нужно использовать команду `cpupower`:
 ```bash
 sudo cpupower frequency-set -g performance
@@ -176,7 +184,7 @@ sudo cpupower frequency-set -g performance
 ```bash
 watch -n 1 "grep \"^[c]pu MHz\" /proc/cpuinfo"
 ```
-# Изменение приоритета процесса `nice`
+## Изменение приоритета процесса `nice`
 Можно заставить планировщик ОС задавать приоритет. Наивысшее значение 20:
 ```bash
 sudo nice -n -20 <command>
