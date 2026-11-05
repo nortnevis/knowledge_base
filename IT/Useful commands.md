@@ -201,6 +201,8 @@ sudo taskset -c 0,2 nice -n -20 <command>
 ```bash
 sudo chrt -f 99 taskset -c 2,3 <command>
 ```
+
+---
 # System journal linux
 Посмотреть используемое пространство:
 ```bash
